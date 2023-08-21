@@ -24,9 +24,9 @@ app.get("/api/hello", function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 
-app.get("/api/:date", function(req, res) {
+app.get("/api/:date?", function(req, res) {
   var date = req.params.date
-  if (date.length > 1) {
+  if (date !== undefined) {
     var milliseconds = Date.parse(date);
     if (isNaN(milliseconds)) {
       milliseconds = date
@@ -59,7 +59,6 @@ function normal_date_to_utc_converter(milliseconds) {
 
   milliseconds = Number(milliseconds)
   var utc_date = new Date(milliseconds);
-  console.log(utc_date)
   if (String(utc_date) != 'Invalid Date') {
     const dayOfWeek = weekdays[utc_date.getDay()]
     var day = Number(utc_date.getUTCDate()) < 10 ? `0${utc_date.getUTCDate()}` : utc_date.getUTCDate()
