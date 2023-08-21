@@ -26,6 +26,7 @@ app.get("/api/hello", function(req, res) {
 
 app.get("/api/:date", function(req, res) {
   var date = req.params.date
+  console.log(req.params)
   var milliseconds = Date.parse(date);
   if (isNaN(milliseconds)) {
     milliseconds = date
@@ -46,7 +47,7 @@ function normal_date_to_utc_converter(milliseconds) {
 
   milliseconds = Number(milliseconds)
   var utc_date = new Date(milliseconds);
-  var day = utc_date.getUTCDate();
+  var day = Number(utc_date.getUTCDate()) < 10 ? `0${utc_date.getUTCDate()}` : utc_date.getUTCDate()
   var month = utc_date.toLocaleString('default', { month: 'short' });
   var year = utc_date.getUTCFullYear();
   var hours = utc_date.getUTCHours();
