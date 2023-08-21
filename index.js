@@ -26,7 +26,6 @@ app.get("/api/hello", function(req, res) {
 
 app.get("/api/:date", function(req, res) {  
   var date = req.params.date
-  console.log(req.params)
   var milliseconds = Date.parse(date);
   if (isNaN(milliseconds)) {
     milliseconds = date
