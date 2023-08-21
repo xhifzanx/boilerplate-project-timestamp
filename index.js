@@ -24,15 +24,27 @@ app.get("/api/hello", function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 
-app.get("/api/:date", function(req, res) {  
+app.get("/api/:date", function(req, res) {
   var date = req.params.date
-  var milliseconds = Date.parse(date);
-  if (isNaN(milliseconds)) {
-    milliseconds = date
+  if (date.length > 1) {
+    var milliseconds = Date.parse(date);
+    if (isNaN(milliseconds)) {
+      milliseconds = date
+    }
+
+    var formatted_date = normal_date_to_utc_converter(milliseconds)
+    if (formatted_date == 'Invalid Date') {
+      res.json({ error: formatted_date })
+    } else {
+      res.json({ unix: Number(milliseconds), utc: formatted_date })
+    }
+  } else {
+    var today = new Date();
+    var milliseconds = Date.parse(today)
+    var formatted_date = normal_date_to_utc_converter(milliseconds)
+    res.json({ unix: Number(milliseconds), utc: formatted_date })
   }
 
-  var formatted_date = normal_date_to_utc_converter(milliseconds)
-  res.json({ unix: Number(milliseconds), utc: formatted_date })
 })
 
 
@@ -44,22 +56,28 @@ var listener = app.listen(process.env.PORT, function() {
 
 function normal_date_to_utc_converter(milliseconds) {
   const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  
+
   milliseconds = Number(milliseconds)
   var utc_date = new Date(milliseconds);
+  console.log(utc_date)
+  if (String(utc_date) != 'Invalid Date') {
+    const dayOfWeek = weekdays[utc_date.getDay()]
+    var day = Number(utc_date.getUTCDate()) < 10 ? `0${utc_date.getUTCDate()}` : utc_date.getUTCDate()
+    var month = utc_date.toLocaleString('default', { month: 'short' });
+    var year = utc_date.getUTCFullYear();
+    var hours = utc_date.getUTCHours();
+    var minutes = utc_date.getUTCMinutes();
+    var seconds = utc_date.getUTCSeconds();
 
-  const dayOfWeek = weekdays[utc_date.getDay()]
-  var day = Number(utc_date.getUTCDate()) < 10 ? `0${utc_date.getUTCDate()}` : utc_date.getUTCDate()
-  var month = utc_date.toLocaleString('default', { month: 'short' });
-  var year = utc_date.getUTCFullYear();
-  var hours = utc_date.getUTCHours();
-  var minutes = utc_date.getUTCMinutes();
-  var seconds = utc_date.getUTCSeconds();
+    var formattedDate = dayOfWeek + ', ' + day + ' ' + month + ' ' + year + ' ' +
+      (hours < 10 ? '0' : '') + hours + ':' +
+      (minutes < 10 ? '0' : '') + minutes + ':' +
+      (seconds < 10 ? '0' : '') + seconds + ' GMT';
 
-  var formattedDate = dayOfWeek + ', ' + day + ' ' + month + ' ' + year + ' ' +
-    (hours < 10 ? '0' : '') + hours + ':' +
-    (minutes < 10 ? '0' : '') + minutes + ':' +
-    (seconds < 10 ? '0' : '') + seconds + ' GMT';
+    return formattedDate
+  } else {
+    return 'Invalid Date'
+  }
 
-  return formattedDate
+
 }
