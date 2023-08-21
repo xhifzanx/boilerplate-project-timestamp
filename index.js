@@ -24,7 +24,7 @@ app.get("/api/hello", function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 
-app.get("/api/:date", function(req, res) {
+app.get("/api/:date", function(req, res) {  
   var date = req.params.date
   console.log(req.params)
   var milliseconds = Date.parse(date);
@@ -44,9 +44,12 @@ var listener = app.listen(process.env.PORT, function() {
 });
 
 function normal_date_to_utc_converter(milliseconds) {
-
+  const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  
   milliseconds = Number(milliseconds)
   var utc_date = new Date(milliseconds);
+
+  const dayOfWeek = weekdays[utc_date.getDay()]
   var day = Number(utc_date.getUTCDate()) < 10 ? `0${utc_date.getUTCDate()}` : utc_date.getUTCDate()
   var month = utc_date.toLocaleString('default', { month: 'short' });
   var year = utc_date.getUTCFullYear();
@@ -54,7 +57,7 @@ function normal_date_to_utc_converter(milliseconds) {
   var minutes = utc_date.getUTCMinutes();
   var seconds = utc_date.getUTCSeconds();
 
-  var formattedDate = day + ' ' + month + ' ' + year + ' ' +
+  var formattedDate = dayOfWeek + ', ' + day + ' ' + month + ' ' + year + ' ' +
     (hours < 10 ? '0' : '') + hours + ':' +
     (minutes < 10 ? '0' : '') + minutes + ':' +
     (seconds < 10 ? '0' : '') + seconds + ' GMT';
